@@ -1,0 +1,21 @@
+        <div   class="container">
+            <canvas [hidden]="loading" id="fabricCanavs"></canvas>
+            <mat-card  id="toolPanel">
+               <mat-icon matTooltip="Move" svgIcon="pan" ></mat-icon>
+               <mat-icon matTooltip="Select" svgIcon="selector" ></mat-icon>
+               <mat-icon matTooltip="Pointer" svgIcon="pointer" ></mat-icon>
+               <mat-icon matTooltip="Brushes" svgIcon="pencil" ></mat-icon>
+               <mat-icon matTooltip="Shapes" >interests</mat-icon>
+               <mat-icon matTooltip="Text/Formulae "  class="active">text_fields</mat-icon>
+               <mat-icon matTooltip="Import Image" >image</mat-icon>
+               <mat-icon matTooltip="Undo" >undo</mat-icon>
+               <mat-icon matTooltip="Redo" >redo</mat-icon>
+               <mat-icon matTooltip="Properties" svgIcon="settings" ></mat-icon>
+            </mat-card>
+            <mat-card  id="zoomPanel">
+             
+                <mat-icon>zoom_out</mat-icon>
+                <span  >100%</span>
+                <mat-icon>zoom_in</mat-icon>
+            </mat-card>
+        </div>
