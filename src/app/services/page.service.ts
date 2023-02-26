@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { CanvasComponent } from '../components/canvas/canvas.component';
 import { Page } from '../models/page.model';
+import * as _ from "lodash";
+import * as R from 'ramda'
+import { Subject } from 'rxjs';
 @Injectable()
 export class PageService {
+
   pages: Page[] = [];
   currentIndex! :number;
   constructor(){
@@ -42,7 +46,7 @@ export class PageService {
      this.pages[this.currentIndex].info.preview = data.preview;
   }
   copyPage(page:Page){
-    let pageClone ={ ...page };
+    let pageClone = R.clone(page);
     pageClone.info.id = Date.now();
     this.pages.push(pageClone);
     this.setIndex();

@@ -1,21 +1,69 @@
-        <div   class="container">
-            <canvas [hidden]="loading" id="fabricCanavs"></canvas>
-            <mat-card  id="toolPanel">
-               <mat-icon matTooltip="Move" svgIcon="pan" ></mat-icon>
-               <mat-icon matTooltip="Select" svgIcon="selector" ></mat-icon>
-               <mat-icon matTooltip="Pointer" svgIcon="pointer" ></mat-icon>
-               <mat-icon matTooltip="Brushes" svgIcon="pencil" ></mat-icon>
-               <mat-icon matTooltip="Shapes" >interests</mat-icon>
-               <mat-icon matTooltip="Text/Formulae "  class="active">text_fields</mat-icon>
-               <mat-icon matTooltip="Import Image" >image</mat-icon>
-               <mat-icon matTooltip="Undo" >undo</mat-icon>
-               <mat-icon matTooltip="Redo" >redo</mat-icon>
-               <mat-icon matTooltip="Properties" svgIcon="settings" ></mat-icon>
-            </mat-card>
-            <mat-card  id="zoomPanel">
-             
-                <mat-icon>zoom_out</mat-icon>
-                <span  >100%</span>
-                <mat-icon>zoom_in</mat-icon>
-            </mat-card>
+<canvas id="fabricCanavs"></canvas>
+<mat-card id="toolPanel">
+
+    <mat-icon *ngFor="let tool of toolConfig.tools" [matTooltip]="tool.tool_tip" [svgIcon]="tool.svg"
+        (click)="onToolChange(tool.code)"
+        [class.activeTool]="toolService.properties.tool ==tool.code ">{{tool.icon}} </mat-icon> 
+    <mat-icon [class.activeTool]="isBrushActive()" matTooltip="Brushes" svgIcon="pencil" [matMenuTriggerFor]="brushMenu"></mat-icon>
+    <mat-menu class="menu" overlayPanelClass="panelClass" #brushMenu="matMenu">
+        <div class="tools">
+            <button *ngFor="let brush of toolConfig.brushes" (click)="onToolChange(brush.code)" [matTooltip]="brush.tool_tip"
+                [class.activeTool]="toolService.properties.tool == brush.code">
+                <mat-icon  [svgIcon]="brush.svg">{{brush.icon}}</mat-icon>
+            </button>
         </div>
+    </mat-menu>
+    <mat-icon [class.activeTool]="isShapeActive()" matTooltip="Shapes" [matMenuTriggerFor]="shapeMenu">interests</mat-icon>
+    <mat-menu class="menu" overlayPanelClass="panelClass" #shapeMenu="matMenu">
+        <div class="tools">
+            <button *ngFor="let shape of toolConfig.shapes" (click)="onToolChange(shape.code)" [matTooltip]="shape.tool_tip"
+                [class.activeTool]="toolService.properties.tool == shape.code">
+                <mat-icon  [svgIcon]="shape.svg">{{shape.icon}}</mat-icon>
+            </button>
+        </div>
+    </mat-menu>
+    <mat-icon   [class.activeTool]="toolService.properties.tool =='eraser' " [matMenuTriggerFor]="eraserMenu">delete_forever</mat-icon> 
+    <mat-menu class="menu" overlayPanelClass="panelClass" #eraserMenu="matMenu">
+        <div class="tools">
+            <button  (click)="onToolChange('eraser')" matTooltip="Eraser"
+                [class.activeTool]="toolService.properties.tool == 'eraser'">
+                <mat-icon svgIcon="eraser" ></mat-icon>
+            </button>
+            <button  (click)="clearAll()" matTooltip="Clear All">
+                <mat-icon  >clear</mat-icon>
+             </button>
+        </div>
+    </mat-menu>
+    
+    <input #imageInput style="display: none;" type="file" accept="image/*" (change)="handleFileInput($event)">
+    <mat-icon (click)="imageInput.click()" matTooltip="Import Image">image</mat-icon>
+    <!-- <mat-icon matTooltip="Undo">undo</mat-icon>
+    <mat-icon matTooltip="Redo">redo</mat-icon> -->
+    <mat-icon matTooltip="Properties" svgIcon="settings" (click)="openSettingMenu()"></mat-icon>
+</mat-card>
+<mat-card id="zoomPanel">
+
+    <button (click)="onZoom(180)" mat-icon-button [disabled]="zoom<=1"> <mat-icon>zoom_out</mat-icon></button>
+    <button (click)="setOrigin()" mat-icon-button><mat-icon>adjust</mat-icon></button>
+    <button (click)="onZoom(-180)" mat-icon-button [disabled]="zoom>=4"> <mat-icon>zoom_in</mat-icon></button>
+</mat-card>
+<mat-card *ngIf="settingMenuOpened" class="settingMenu">
+    <mat-icon class="closeIcon" (click)="openSettingMenu()">close</mat-icon>
+    <div style="padding : 12px">
+        <select #fontFamily (change)="updateFontFamily(fontFamily.value)" [value]="toolService.properties.fontFamily">
+            <option disabled>Select Font Family</option>
+            <option *ngFor="let ff of fontFamilies">{{ff}}</option>
+        </select>
+        <div class="colors">
+            <button [class.active]="color == toolService.properties.color"   (click)="updateColor(color)" id="colorBtn" [ngStyle]="{ backgroundColor  :color}"
+                *ngFor="let color of colors"></button>
+        </div>
+        <div class="stroke">
+            <mat-slider min="1" max="35" step="2">
+                <input #width (change)="updateWidth(width.value)" [value]="toolService.properties.width" matSliderThumb>
+            </mat-slider>
+            <span> {{ toolService.properties.width }}px </span>
+        </div>
+    </div>
+</mat-card>
+

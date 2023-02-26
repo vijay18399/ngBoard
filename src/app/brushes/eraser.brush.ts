@@ -1,29 +1,30 @@
 import { fabric } from 'fabric';
+// const fabricjs: typeof fabric =
+//     typeof fabric === 'undefined' ? require('fabric').fabric : fabric;
 
-    import {
-        FabricEvent,
-        FabricPointer,
-        FabricPointerEvent,
-    } from '../utils/fabric.utils';
+import {
+    FabricEvent,
+    FabricPointer,
+    FabricPointerEvent,
+} from '../utils/fabric.utils';
 
-export interface PointerInterface extends fabric.BaseBrush {
+export interface ClickEraserInterface extends fabric.BaseBrush {
 
     onMouseDown(pointer: FabricPointer | FabricEvent, ev: FabricEvent): void;
     onMouseMove(pointer: FabricPointer | FabricEvent, ev: FabricEvent): void;
     onMouseUp(ev?: FabricEvent): void;
 }
 
-const PointerImp = <any>fabric.util.createClass(fabric.BaseBrush, {
+const ClickEraserImp = <any>fabric.util.createClass(fabric.BaseBrush, {
 
 
     /**
      * Constructor
-     * @param {fabric.Canvas} canvas
+     * @param {fabricjs.Canvas} canvas
      * @return {Pointer} Instance of a pencil brush
      */
     initialize: function (canvas: fabric.Canvas) {
         this.canvas = canvas;
-        console.log("kkk")
     },
     /**
      * Inovoked on mouse down
@@ -34,7 +35,11 @@ const PointerImp = <any>fabric.util.createClass(fabric.BaseBrush, {
         pointer: any,
         ev: FabricEvent
     ) {
-        //  this.canvas.freeDrawingCursor = 'pointer';
+        var object = this.canvas.findTarget(pointer,true);
+        if(object){
+        console.log(object,object.type)
+        this.canvas.remove(object)
+        }
     },
     /**
      * Inovoked on mouse move
@@ -45,26 +50,26 @@ const PointerImp = <any>fabric.util.createClass(fabric.BaseBrush, {
         pointer: FabricPointer | FabricEvent,
         ev: FabricEvent
     ) { 
-        //  this.canvas.freeDrawingCursor = 'pointer';
+        // this.canvas.freeDrawingCursor = 'pointer';
     },
     /**
      * Invoked on mouse up
      * @param {Object} ev
      */
     onMouseUp: function (ev?: FabricEvent) {
-        //  this.canvas.freeDrawingCursor = 'pointer';
+        // this.canvas.freeDrawingCursor = 'pointer';
      },
    
 });
 
 /**
- * Pointer class
- * @class fabric.Pointer
- * @extends fabric.BaseBrush
+ * ClickEraser class
+ * @class fabricjs.ClickEraser
+ * @extends fabricjs.BaseBrush
  */
-const Pointer: {
-    new(canvas: fabric.StaticCanvas): PointerInterface;
-} = PointerImp;
+const ClickEraser: {
+    new(canvas: fabric.StaticCanvas): ClickEraserInterface;
+} = ClickEraserImp;
 
-(fabric as any).Pointer = Pointer;
-export default Pointer;
+(fabric as any).ClickEraser = ClickEraser;
+export default ClickEraser;

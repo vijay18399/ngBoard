@@ -1,5 +1,15 @@
-<mat-sidenav-container>
-  <mat-sidenav right="0" position="end" #sidenav mode="over" opened>
+<div id="container">
+  <ng-template canvasDir></ng-template>
+  <div *ngIf="!sideNavOpen" class="pagePanel">
+    <button mat-icon-button [disabled]="pageService.currentIndex==0" (click)="prev()">
+      <mat-icon>arrow_back_ios</mat-icon></button>
+    <span class="pageNo" (click)="opensideNav()">{{ pageService.currentIndex+1 }}/{{pageService.pages.length}}</span>
+    <button mat-icon-button *ngIf="pageService.currentIndex  != pageService.pages.length-1" (click)="next()">
+      <mat-icon>arrow_forward_ios</mat-icon></button>
+    <button mat-icon-button *ngIf="pageService.currentIndex  == pageService.pages.length-1" (click)="createPage()">
+      <mat-icon>add</mat-icon></button>
+  </div>
+  <div *ngIf="sideNavOpen" class="pageMenu">
     <mat-toolbar>
       <button (click)="opensideNav()" mat-icon-button><mat-icon>chevron_right</mat-icon></button>
       <span>Pages : {{pageService.pages.length}} </span>
@@ -7,31 +17,17 @@
       <button (click)="createPage()" mat-icon-button> <mat-icon>add</mat-icon></button>
     </mat-toolbar>
     <div class="pages">
-      <div  [class.active]="i==pageService.currentIndex" *ngFor="let page of pageService.pages;let i=index" class="page">
+      <div [class.active]="i==pageService.currentIndex" *ngFor="let page of pageService.pages;let i=index" class="page">
         <div class="pageOptions">
-          <mat-icon (click)="copyPage(page)" >content_copy</mat-icon>
-          <mat-icon (click)="deletePage(i)" >delete</mat-icon>
+          <mat-icon (click)="copyPage(page)">content_copy</mat-icon>
+          <mat-icon (click)="deletePage(i)">delete</mat-icon>
         </div>
         <img (click)="gotoPage(i)" class="preview" [src]="page.info.preview" alt="">
       </div>
     </div>
-
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <ng-template canvasDir></ng-template>
-
-    <div class="pagePanel">
-      <button mat-icon-button [disabled]="pageService.currentIndex==0" (click)="prev()">
-        <mat-icon>arrow_back_ios</mat-icon></button>
-      <span (click)="opensideNav()">{{ pageService.currentIndex+1 }}/{{pageService.pages.length}}</span>
-      <button mat-icon-button *ngIf="pageService.currentIndex  != pageService.pages.length-1" (click)="next()">
-        <mat-icon>arrow_forward_ios</mat-icon></button>
-      <button mat-icon-button *ngIf="pageService.currentIndex  == pageService.pages.length-1" (click)="createPage()">
-        <mat-icon>add</mat-icon></button>
-    </div>
-
-    <button class="pageProp" mat-mini-fab>
-      <mat-icon>edit_document</mat-icon>
-    </button>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+  <button  (click)="changeTheme()" class="pageProp" mat-mini-fab>
+    <mat-icon *ngIf="!isDarkMode" >light_mode</mat-icon>
+    <mat-icon  *ngIf="isDarkMode" >nightlight_round</mat-icon>
+  </button>
+</div>

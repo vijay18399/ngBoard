@@ -1,8 +1,139 @@
 /* You can add global styles to this file, and also import other style files */
-*{
-    padding: 0px;
-    margin: 0px;
+* {
+  padding: 0px;
+  margin: 0px;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-svg { pointer-events: none; }
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+svg {
+  pointer-events: none;
+}
+
+.menu {
+  left: 54px !important;
+  position: absolute;
+}
+
+::ng-deep .mat-menu-panel {
+  padding: 0 10px !important;
+  width: 100% !important;
+}
+
+.panelClass {
+  width: 50px;
+}
+
+.dark-mode {
+  
+
+  select {
+    background-color: #333 !important;
+    color: #fafafa !important;
+  }
+  .pageProp {
+    background-color: #021121 !important;
+    color: #ffffff;
+  }
+  .pageMenu {
+    background-color: #46484b !important;
+  }
+  .menu {
+    background-color: #1c1c1c !important;
+    button{
+      background-color: #dcdcdc !important;
+    }
+  }
+
+  .pageMenu {
+    background-color: #021121;
+    color: #ffffff;
+
+    mat-toolbar {
+      background-color: #021121;
+      color: #ffffff;
+    }
+  }
+
+
+
+  .pagePanel {
+    background-color: #46484b !important;
+
+    .pageNo {
+      background-color: #46484b !important;
+      color: #bebebe !important;
+    }
+
+    button {
+      background-color: #46484b !important;
+
+      mat-icon {
+        background-color: #46484b !important;
+        color: #bebebe !important;
+      }
+    }
+  
+  }
+
+  //   color: #ffffff !important;
+  //  button{
+  //   background-color: #46484b;
+  //   color: #1c0505;
+  //  }
+  //   span {
+  //     background-color: #021121!important;
+  //     color: #46484b;
+  //   }
+  // }
+.settingMenu {
+  background-color: #1a1b1c !important;
+  color: #e1e8ef !important;
+  button{
+    border: 4px solid gray;
+  }
+  .active{
+    border: 4px solid rgb(253, 255, 253);
+}
+}
+  #toolPanel, #zoomPanel {
+    background-color: #021121 !important;
+    color: #e1e8ef !important;
+
+    mat-icon {
+      background-color: #46484b !important;
+      color: #bebebe !important;
+    }
+  
+    mat-icon:hover {
+      background-color: #bcbec0 !important;
+      color: #1c0505 !important;
+    }
+
+    button {
+      background-color: #46484b !important;
+      color: #bebebe !important;
+
+      mat-icon {
+        background-color: #46484b !important;
+        color: rgb(216, 225, 225) !important;
+      }
+    }
+    .activeTool {
+      background-color: #bcbec0 !important;
+      color: #1c0505 !important;
+    }
+  }
+  button.activeTool{
+    background-color: #333 !important;
+    color: #f3f4f6 !important; 
+  }
+}
