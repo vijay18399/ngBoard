@@ -1,5 +1,3 @@
-import { Type } from '@angular/core';
-
 export class Page {
-  constructor(public component: Type<any>, public info: any) {}
+  constructor(public info: any) {}
 }

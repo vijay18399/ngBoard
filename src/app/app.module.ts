@@ -1,29 +1,39 @@
+import { CanvasComponent } from "./components/canvas.component";
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CanvasComponent } from './components/canvas/canvas.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from './material.module';
-import { PageService } from './services/page.service';
-import { DynamicDirective } from './utils/dynamic.directive';
-import { HttpClientModule } from '@angular/common/http';
+import { AppRoutingModule } from "./app-routing.module";
+import { WhiteboardComponent } from './components/whiteboard/whiteboard.component';
+import { FormsModule } from "@angular/forms";
+import { HomeComponent } from "./pages/home/home.component";
+import { CommonModule } from "@angular/common";
+import { PagesDialogComponent } from "./components/pages-dialog.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { ActionControlsComponent } from "./components/action-controls.component";
+import { ToolBarComponent } from "./components/tool-bar/tool-bar.component";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DynamicDirective,
-    CanvasComponent,
+    declarations: [
+        AppComponent,
+        HomeComponent,
+        WhiteboardComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        CommonModule,
+        ActionControlsComponent,
+        ToolBarComponent,
+        CanvasComponent,
+        PagesDialogComponent,
+        MatTooltipModule,
+        BrowserAnimationsModule
+    ],
+    providers: [
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    MaterialModule
-  ],
-  providers: [PageService],
-  bootstrap: [AppComponent]
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
+

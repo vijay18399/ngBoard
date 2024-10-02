@@ -1,0 +1,8 @@
+<div  class="whiteboard" *ngIf="currentPage">
+        <app-canvas [page]="currentPage.info"></app-canvas>
+        <action-controls></action-controls>
+        <tool-bar (addImage)="handleFileInput($event)"  ></tool-bar>
+        <button class="page-menu-button"  (click)="openPagesDialog()">
+            {{ pageService.currentIndex + 1 }}/{{ pageService.pages.length }}
+        </button>
+</div>

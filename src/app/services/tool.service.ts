@@ -1,93 +1,141 @@
 import { Injectable } from '@angular/core';
-import { fabric } from 'fabric';
-import perfectFreeHand from '../brushes/perfectHand.brush';
-import ClickEraser from '../brushes/eraser.brush';
-import Laser from '../brushes/laser.brush';
-import PanZoom from '../brushes/pan.brush';
-import Pointer from '../brushes/pointer.brush';
-import shapeCreator from '../brushes/shape.creator';
-import TextCreator from '../brushes/text.creator';
+import { BehaviorSubject, Observable } from 'rxjs';
 import cursorMap from '../config/cursor.config';
+import { ArrowCreator, EllipseCreator, LineCreator, RectangleCreator, TriangleCreator } from '../fabric/shapes';
+import { perfectHand, Laser, TextCreator, BucketFill } from '../fabric/brushes';
+import { PanZoom } from '../fabric/utilities';
+declare const fabric: any;
+const EraserBrush = (fabric as any).EraserBrush;
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToolService {
-  _canvas!: fabric.Canvas;
-  properties = {
+  public canvas!: any;
+  private _toolProperties = new BehaviorSubject<any>({
     color: "#000000",
     width: 5,
     tool: 'pencil',
-    fontFamily:'Times New Roman',
-    theme : 'default'
-  }
-  tool: any;
+    fontFamily: 'Chewy-Regular',
+    theme: 'default',
+    shape: 'circle',
+    fill: "#90CAF9",
+  });
+
+  toolProperties$: Observable<any> = this._toolProperties.asObservable();
+  private tool: any;
+  private panzoom: any;
+
   constructor() {
+    this.loadCustomFont();
   }
 
   initCanvas(canvas: fabric.Canvas) {
-    this._canvas = canvas;
+    this.canvas = canvas;
     this.tool = null;
-    this.updateTool(this.properties.tool);
+    this.updateTool(this._toolProperties.value.tool);
   }
-  updateTool(tool: string,fontFamily?:string) {
-    this._canvas.isDrawingMode = true;
-    this._canvas.off('mouse:wheel');
-   console.log(tool)
-    switch (tool) {
-      case 'perfect':
-        this.tool= new perfectFreeHand(this._canvas);
-        break;
-      case 'pencil':
-        this.tool= new fabric.PencilBrush(this._canvas);
-        break;
-      case 'selector':
-        this._canvas.isDrawingMode = false;
-        this.properties.tool = tool;
-        return;
-        break;
-      case 'pointer':
-        this.tool = new Pointer(this._canvas);
-        break;
-      case 'laser':
-        this.tool = new Laser(this._canvas);
-        break;
-      case 'eraser':
-        this.tool =  new ClickEraser(this._canvas);
-        break;
-      case 'text':
-        this.tool = new TextCreator(this._canvas);
-        this.tool.setFontFamily(fontFamily|| 'Tahoma')
-        break;
-      case 'panzoom':
-        this._canvas.freeDrawingCursor =  `grab`;
-        this.tool = new PanZoom(this._canvas);
-        break;
-      default:
-        this.tool = new shapeCreator(this._canvas);
-        this.tool.setShape(tool)
-        break;
 
-    }
-    this.tool.color = this.properties.color;
-    this.tool.width = this.properties.width;
-    this._canvas.freeDrawingBrush = this.tool;
-    if(cursorMap.hasOwnProperty(tool)){
-        this._canvas.freeDrawingCursor = cursorMap[tool];
-    }else{
-      this._canvas.freeDrawingCursor = 'default';
-    }
-    this.properties.tool = tool;
+  initializeTool(toolInstance: any) {
+    this.tool = toolInstance;
+    this.tool.color = this._toolProperties.value.color;
+    this.tool.width = this._toolProperties.value.width;
+    this.tool.fill = this._toolProperties.value.fill;
+    this.canvas.freeDrawingBrush = this.tool;
   }
+
+  updateTool(tool: string, prop?: string) {
+    this.canvas.off('mouse:wheel');
+    this.canvas.off('erasing:end');
+    if (this.panzoom) {
+      this.panzoom.removeListeners();
+      this.panzoom = null;
+    }
+    if (tool !== 'selector') {
+      this.canvas.isDrawingMode = true;
+    }
+
+    const toolMap: { [key: string]: any } = {
+      pencil: perfectHand,
+      laser: Laser,
+      eraser: EraserBrush,
+      text: TextCreator,
+      bucketfill: BucketFill,
+    };
+
+    const ToolClass = toolMap[tool];
+    if (ToolClass) {
+      this.initializeTool(new ToolClass(this.canvas));
+      if (tool === 'eraser') {
+        this.canvas.on('erasing:end', (object: any) => {
+          if (object.targets.length) {
+            this.canvas.saveHistory();
+          }
+        });
+      } else if (tool === 'text') {
+          var ff = this._toolProperties.getValue().fontFamily
+          this.tool.setFontFamily && this.tool.setFontFamily(ff);
+      }
+    } else if (tool === 'selector') {
+      this.canvas.isDrawingMode = false;
+      this.canvas.defaultCursor = cursorMap['default'];
+      this.canvas.hoverCursor = cursorMap['default'];
+      this.canvas.moveCursor = cursorMap['default'];
+      return;
+    } else if (tool === 'panzoom') {
+      this.canvas.isDrawingMode = false;
+      this.panzoom = new PanZoom(this.canvas);
+    } else {
+      this.updateShape(prop);
+    }
+    this.canvas.freeDrawingCursor = cursorMap[tool] || cursorMap['default'];
+    this._toolProperties.next({ ...this._toolProperties.value, tool });
+  }
+
+  updateToolProperties(properties: any) {
+    this._toolProperties.next({ ...this._toolProperties.value, ...properties });
+    this.updateTool(this._toolProperties.value.tool);
+  }
+
   updateColor(color: string) {
-    this.properties.color = color;
-    this._canvas.freeDrawingBrush.color = this.properties.color;
-  }
-  updateWidth(width: number) {
-    this.properties.width = width;
-    this._canvas.freeDrawingBrush.width = this.properties.width;
-  }
-  updatefontFamily(ff:string){
-    this.properties.fontFamily = ff;
+    this.updateToolProperties({ color });
   }
 
+  updateFillColor(fill: string) {
+    this.updateToolProperties({ fill });
+  }
+
+  updateWidth(width: number) {
+    this.updateToolProperties({ width });
+  }
+
+  updateFontFamily(ff: string) {
+    this.updateToolProperties({ fontFamily: ff });
+  }
+  updateShape(shape: string = 'circle') {
+    this._toolProperties.next({ ...this._toolProperties.value, shape, tool: 'shapes' });
+    const shapeMap: { [key: string]: any } = {
+      circle: EllipseCreator,
+      square: RectangleCreator,
+      triangle: TriangleCreator,
+      line: LineCreator,
+      arrow: ArrowCreator,
+    };
+
+    const ShapeClass = shapeMap[shape];
+    if (ShapeClass) {
+      this.initializeTool(new ShapeClass(this.canvas));
+    } else {
+      console.warn(`Unsupported shape: ${shape}`);
+    }
+  }
+
+  loadCustomFont() {
+    const font = new FontFace('Chewy-Regular', 'url(../../assets/Chewy-Regular.ttf)');
+    font.load().then((loadedFont) => {
+      document.fonts.add(loadedFont);
+      console.log('Custom font loaded');
+    }).catch((error) => {
+      console.error('Failed to load custom font:', error);
+    });
+  }
 }

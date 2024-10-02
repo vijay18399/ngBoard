@@ -1,0 +1,39 @@
+<div class="toolbar-container">
+  <div class="toolbar">
+    <div class="toolbar-dash">
+      <button *ngFor="let tool of tools"
+              matTooltip="{{ tool.title || tool.group }}"
+              class="toolbar-btn"
+              [class.active]="isActive(tool, selectedTool)"
+              (click)="onToolClick(tool)"
+              [matMenuTriggerFor]="tool.name === 'shapes' ? shapesMenu : tool.group === 'Drawing' ? toolsMenu : null">
+        <mat-icon>{{ tool.icon }}</mat-icon>
+      </button>
+      <button  matTooltip="Import Image"   class="toolbar-btn" (click)="imageInput.click()">
+              <input #imageInput style="display: none;" type="file" accept="image/*" (change)="handleFileInput($event)">
+              <span class="material-symbols-outlined">image</span>
+      </button>
+      <tool-settings></tool-settings>
+      <colors-picker></colors-picker>
+    </div>
+  </div>
+
+  <mat-menu class="menu" overlayPanelClass="panelClass" xPosition="after" yPosition="above" #shapesMenu="matMenu">
+    <div class="shape-container">
+      <button mat-menu-item *ngFor="let shape of shapes"
+              (click)="updateShape(shape.name)"
+              [class.active]="selectedShape === shape.name">
+        <span class="material-symbols-outlined">{{ shape.icon }}</span>
+      </button>
+    </div>
+  </mat-menu>
+
+  <mat-menu class="menu" overlayPanelClass="panelClass" xPosition="after" yPosition="above" #toolsMenu="matMenu">
+    <div class="tool-container">
+        <button  mat-menu-item [class.active]="selectedTool === tool.name"
+        *ngFor="let tool of drawingTools?.tools" (click)="onToolChange(tool.name)">
+          <span class="material-symbols-outlined">{{tool.icon}}</span>
+        </button>
+    </div>
+  </mat-menu>
+</div>
